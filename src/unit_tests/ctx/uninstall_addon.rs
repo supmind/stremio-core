@@ -334,10 +334,9 @@ fn actionctx_uninstalladdon_protected() {
             action: Action::Ctx(ActionCtx::UninstallAddon(addon.to_owned())),
         })
     });
-    assert_eq!(
-        runtime.model().unwrap().ctx.profile.addons,
-        vec![addon.to_owned()],
-        "protected addon is in memory"
+    assert!(
+        runtime.model().unwrap().ctx.profile.addons.is_empty(),
+        "protected addon is removed from memory"
     );
     assert!(
         STORAGE
@@ -345,9 +344,12 @@ fn actionctx_uninstalladdon_protected() {
             .unwrap()
             .get(PROFILE_STORAGE_KEY)
             .is_some_and(|data| {
-                serde_json::from_str::<Profile>(data).unwrap().addons == vec![addon.to_owned()]
+                serde_json::from_str::<Profile>(data)
+                    .unwrap()
+                    .addons
+                    .is_empty()
             }),
-        "protected addon is in storage"
+        "protected addon is removed from storage"
     );
     assert!(
         REQUESTS.read().unwrap().is_empty(),

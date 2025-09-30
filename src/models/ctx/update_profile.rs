@@ -186,31 +186,27 @@ pub fn update_profile<E: Env + 'static>(
                 .map(|addon| &addon.transport_url)
                 .position(|transport_url| *transport_url == addon.transport_url);
             if let Some(addon_position) = addon_position {
-                if !profile.addons[addon_position].flags.protected && !addon.flags.protected {
-                    profile.addons.remove(addon_position);
+                profile.addons.remove(addon_position);
 
-                    // Remove stream related to this addon from the streams bucket
-                    streams
-                        .items
-                        .retain(|_key, item| item.stream_transport_url != addon.transport_url);
+                // Remove stream related to this addon from the streams bucket
+                streams
+                    .items
+                    .retain(|_key, item| item.stream_transport_url != addon.transport_url);
 
-                    let push_to_api_effects = match profile.auth_key() {
-                        Some(auth_key) => Effects::one(push_addons_to_api::<E>(
-                            profile.addons.to_owned(),
-                            auth_key,
-                        ))
-                        .unchanged(),
-                        _ => Effects::none().unchanged(),
-                    };
-                    Effects::msg(Msg::Event(Event::AddonUninstalled {
-                        transport_url: addon.transport_url.to_owned(),
-                        id: addon.manifest.id.to_owned(),
-                    }))
-                    .join(push_to_api_effects)
-                    .join(Effects::msg(Msg::Internal(Internal::ProfileChanged)))
-                } else {
-                    addon_uninstall_error_effects(addon, OtherError::AddonIsProtected)
-                }
+                let push_to_api_effects = match profile.auth_key() {
+                    Some(auth_key) => Effects::one(push_addons_to_api::<E>(
+                        profile.addons.to_owned(),
+                        auth_key,
+                    ))
+                    .unchanged(),
+                    _ => Effects::none().unchanged(),
+                };
+                Effects::msg(Msg::Event(Event::AddonUninstalled {
+                    transport_url: addon.transport_url.to_owned(),
+                    id: addon.manifest.id.to_owned(),
+                }))
+                .join(push_to_api_effects)
+                .join(Effects::msg(Msg::Internal(Internal::ProfileChanged)))
             } else {
                 addon_uninstall_error_effects(addon, OtherError::AddonNotInstalled)
             }
