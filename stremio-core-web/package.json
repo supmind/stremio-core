@@ -21,6 +21,7 @@
         "@babel/core": "7.24.3",
         "@babel/plugin-transform-runtime": "7.24.3",
         "@babel/preset-env": "7.24.3",
-        "babel-plugin-bundled-import-meta": "0.3.2"
+        "babel-plugin-bundled-import-meta": "0.3.2",
+        "wasm-pack": "0.12.1"
     }
 }
