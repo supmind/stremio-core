@@ -43,7 +43,7 @@ deflate = ["stremio-official-addons/deflate"]
 [dependencies]
 stremio-derive = { path = "stremio-derive" }
 stremio-watched-bitfield = { path = "stremio-watched-bitfield" }
-stremio-official-addons = "=2.1.1"
+stremio-official-addons = { git = "https://github.com/supmind/stremio-official-addons" }
 
 # (De)Serialization
 serde = { version = "1", features = ["derive"] }
